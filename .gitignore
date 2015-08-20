@@ -1,0 +1,12 @@
+.shastore
+*.swo
+*.swp
+node_modules
+browserify-cache.json
+*.env
+.sass-cache
+*.js
+*.css
+index.html
+prod-index.html
+*.map
