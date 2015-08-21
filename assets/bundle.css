@@ -1,0 +1,200 @@
+@import url(http://fonts.googleapis.com/css?family=Oxygen+Mono|Fauna+One);
+button {
+  /* Structure */
+  display: inline-block;
+  zoom: 1;
+  line-height: normal;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+button {
+  font-family: inherit;
+  font-size: 100%;
+  padding: 0.3em 1em;
+  color: #444;
+  /* rgba not supported (IE 8) */
+  color: rgba(0, 0, 0, 0.8);
+  /* rgba supported */
+  border: 1px solid #999;
+  /*IE 6/7/8*/
+  border: none rgba(0, 0, 0, 0);
+  /*IE9 + everything else*/
+  background-color: #E6E6E6;
+  text-decoration: none;
+  border-radius: 2px;
+}
+button:hover,
+button:focus {
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(40%, rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.1)));
+  background-image: -webkit-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+  background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.1));
+  background-image: -o-linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+  background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.1));
+}
+button:focus {
+  outline: 0;
+}
+button:active {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 6px rgba(0, 0, 0, 0.2) inset;
+  border-color: #000\9;
+}
+button[disabled] {
+  border: none;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  filter: alpha(opacity=40);
+  -khtml-opacity: 0.40;
+  -moz-opacity: 0.40;
+  opacity: 0.40;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+* {
+  box-sizing: border-box;
+  font-family: 'Fauna One', 'Verdana', 'Ubuntu', 'Calibri', 'Helvetica', 'Arial', sans-serif;
+}
+body {
+  position: relative;
+  min-height: 400px !important;
+  margin: 0;
+  padding: 0;
+}
+#app {
+  height: auto;
+  overflow: auto;
+  padding: 10px;
+}
+body > article {
+  width: 800px;
+  max-width: 100%;
+  margin: auto;
+  text-align: center;
+}
+body > button {
+  font-size: 2em;
+}
+form {
+  width: 100%;
+}
+form header {
+  width: 100%;
+  height: 50px;
+}
+form header input {
+  width: 90%;
+  height: 50px;
+  margin: 0;
+  border: 0;
+  font-size: 1.8em;
+}
+form header button {
+  width: 9%;
+  margin-left: 1%;
+  height: 50px;
+}
+form main {
+  width: 100%;
+}
+form main aside {
+  width: 50%;
+  float: left;
+}
+form main textarea {
+  width: 50%;
+  float: left;
+  font-family: 'Oxygen Mono', monospace;
+  margin: 69px 0;
+  border: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+aside h1 {
+  margin: 4px;
+  padding: 0;
+  font-weight: normal;
+  font-size: 24px;
+  display: inline;
+}
+aside button {
+  margin: left;
+}
+aside button:first-child {
+  margin-left: 6px;
+}
+input,
+textarea {
+  padding: 10px;
+  outline: none;
+  transition: all 800ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+input:focus,
+textarea:focus,
+input:hover,
+textarea:hover {
+  background: #eee;
+  transition: all 800ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+ul {
+  margin: 0;
+  padding: 10px 0;
+  list-style: none;
+  height: auto;
+  overflow: auto;
+}
+ul li {
+  float: left;
+}
+ul li button {
+  padding: 0;
+  background-color: #ffcfcf;
+}
+aside div {
+  clear: both;
+}
+#app a {
+  text-decoration: none;
+  padding: 3px 20px;
+  margin: 7px;
+  border-radius: 5px;
+  transition: all 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+#app a:active,
+#app a:focus,
+#app a.selected {
+  color: white;
+  background: black;
+  margin: 2px 0;
+  transition: all 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+#app a:hover:not(.selected) {
+  background: #eee;
+  transition: all 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+footer {
+  text-align: center;
+  font-size: 1.4em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
