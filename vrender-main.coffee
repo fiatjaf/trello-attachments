@@ -12,5 +12,5 @@ module.exports = (state, channels) ->
   (div id: 'app',
     if state.user.id then (require './vrender-edit')(state, channels) else (button
       'ev-click': tl.sendClick channels.login, {}, {preventDefault: true}
-    , "connect with Trello")
+    , "connect to Trello")
   )

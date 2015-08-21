@@ -8,6 +8,7 @@
     "browserify-incremental": "^3.0.1",
     "coffeeify": "^1.1.0",
     "envify": "^3.4.0",
+    "haikunator": "^0.2.2",
     "lie": "^3.0.1",
     "lockr": "^0.8.2",
     "routerjs": "^1.0.3",

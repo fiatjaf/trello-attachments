@@ -3,13 +3,22 @@ Trello     = require 'trello-browser'
 Router     = require 'routerjs'
 Lockr      = require 'lockr'
 tl         = require 'talio'
+haiku      = require 'haikunator'
 superagent = Trello.superagent
 
 trello = new Trello 'ac61d8974aa86dd25f9597fa651a2ed8'
 
+humane.timeout = 2500
+humane.waitForMove = false
+humane.clickToClose = true
+humane.info = humane.spawn(addnCls: 'humane-flatty-info', timeout: 5000)
+humane.error = humane.spawn(addnCls: 'humane-flatty-error', timeout: 4000)
+humane.success = humane.spawn(addnCls: 'humane-flatty-success', timeout: 2500)
+
 router = new Router()
 
 State = tl.StateFactory
+  next: null
   user:
     id: ''
     boards: []
@@ -32,12 +41,19 @@ handlers =
     State.change key, data[key]
   onLogged: (State) ->
     Promise.resolve().then(->
+      humane.log 'You are connected to Trello.'
       trello.get "/1/tokens/#{trello.token}/member", {fields: 'username,id'}
     ).then((user) ->
+      humane.info "Welcome, <b>#{user.username}</b>."
       State.silentlyUpdate 'user', user
-      document.body.appendChild document.getElementById('app')
+      document.body.insertBefore document.getElementById('app'), document.querySelector('footer')
       remove = document.querySelector('body > article')
       document.body.removeChild remove
+
+      if State.get 'next'
+        router.redirect State.get 'next'
+      else if location.hash.slice(0, 7) == '#/login'
+        router.redirect "#/user/#{State.get 'user.id'}"
     ).catch(->
       Lockr.set 'token', null
     ).catch(console.log.bind console)
@@ -56,8 +72,6 @@ handlers =
       Lockr.set 'token-expires', now.setMinutes now.getMinutes() + 59
 
       @onLogged State
-    ).then(->
-      router.redirect "#/user/#{State.get 'user.id'}"
     ).catch(console.log.bind console)
   listBoards: (State) ->
     Promise.resolve().then(=>
@@ -99,19 +113,26 @@ handlers =
       if not State.get('card.attachments').length
         @listAttachments State
     ).then(->
-      for attachment in State.get 'card.attachments'
-        if attachment.name == State.get 'attachment.name'
-          State.silentlyUpdate 'attachment', attachment
-          return Promise.resolve().then(->
-            superagent.get('//cors-anywhere.herokuapp.com/' + attachment.url)
-          ).then((res) ->
-            State.change 'attachment.content', res.text
-          )
+      if State.get 'attachment.new'
+        return
+      else
+        for attachment in State.get 'card.attachments'
+          if attachment.name == State.get 'attachment.name'
+            State.silentlyUpdate 'attachment', attachment
+            return Promise.resolve().then(->
+              superagent.get('//cors-anywhere.herokuapp.com/' + attachment.url)
+            ).then((res) ->
+              State.change 'attachment.content', res.text
+            )
       throw new Error 'no attachment found with that name.'
     ).catch(=>
-      @newAttachment State, State.get 'attachment.name'
+      @newAttachment State, name: State.get 'attachment.name'
     ).catch(console.log.bind console)
-  newAttachment: (State, name) ->
+  newAttachment: (State, presets) ->
+    {name, kind} = presets
+    if not name
+      kind = 'txt' if not kind
+      name = haiku(tokenLength: 0, delimiter: '') + '.' + kind
     State.change
       attachment:
         id: null
@@ -120,6 +141,7 @@ handlers =
           when 'js' then 'document.addEventListener("DOMContentLoaded", function () {\n\n})'
           when 'css' then 'body > main article {\n\n}'
           else '# new attachment'
+        new: true
     router.redirect "#/b/#{State.get 'board.id'}/c/#{State.get 'card.id'}/a/#{name}"
   sendTextAsFile: (State, data) ->
     Promise.resolve().then(->
@@ -128,14 +150,28 @@ handlers =
         name: State.get 'attachment.name'
         file: data['attachment.content']
       }
-    ).then((res) ->
+    ).then((res) =>
+      humane.success "attachment <b>#{State.get 'attachment.name'}</b> saved on Trello."
       if State.get 'attachment.id'
-        trello
-          .delete("/1/cards/#{State.get 'card.id'}/attachments/#{State.get 'attachment.id'}")
-          .catch(console.log.bind console)
+        @deleteAttachmentFromTrello(
+          State,
+          {card: (State.get 'card.id'), attachment: (State.get 'attachment.id')}
+        )
       State.change 'attachment.id', res.id
     ).then(handlers.listAttachments.bind handlers, State)
      .catch(console.log.bind console)
+  deleteAttachment: (State, which) ->
+    Promise.resolve().then(=>
+      @deleteAttachmentFromTrello State, which
+    ).then(->
+      humane.success "Attachment deleted."
+    ).then(handlers.listAttachments.bind handlers, State)
+     .catch(console.log.bind console)
+  deleteAttachmentFromTrello: (State, which) ->
+    {card, attachment} = which
+    trello
+      .delete("/1/cards/#{card}/attachments/#{attachment}")
+      .catch(console.log.bind console)
 
 Promise.resolve('starting...').then(->
   console.log 'referrer:', document.referrer
@@ -151,6 +187,16 @@ Promise.resolve('starting...').then(->
     handlers.onLogged(State)
 ).then(->
   router
+    .before (req, next) ->
+      if State.get('user.id') and req.href.slice(0, 7) == '#/login'
+        router.redirect "#/user/#{State.get 'user.id'}"
+        return
+      else if not State.get('user.id') and req.href.slice(0, 7) != '#/login'
+        router.redirect '#/login?next=' + req.href
+        return
+      else if req.get 'next'
+        State.silentlyUpdate 'next', req.get 'next'
+      next()
     .addRoute '#/login', (req) ->
       console.log 'logging in'
     .addRoute '#/user/:user', (req) ->
@@ -166,14 +212,14 @@ Promise.resolve('starting...').then(->
       State.silentlyUpdate 'attachment', {}
       handlers.listCards State
     .addRoute '#/b/:board/c/:card', (req) ->
-      State.silentlyUpdate 'board.id', req.params.card
+      State.silentlyUpdate 'board.id', req.params.board
       State.silentlyUpdate 'card.id', req.params.card
       State.silentlyUpdate 'attachment', {}
       handlers.listAttachments State
     .addRoute '#/b/:board/c/:card/a/:attachmentName', (req) ->
-      State.silentlyUpdate 'board.id', req.params.card
+      State.silentlyUpdate 'board.id', req.params.board
       State.silentlyUpdate 'card.id', req.params.card
-      State.silentlyUpdate 'attachment.name', req.params.attachmentName
+      State.silentlyUpdate 'attachment', {name: req.params.attachmentName}
       handlers.fetchAttachment State
     .errors 404, (err, href) ->
       console.log 'no route', err, href

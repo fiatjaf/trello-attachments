@@ -15,6 +15,7 @@ module.exports = (state, channels) ->
   ,
     (header {},
       (input
+        title: "rename #{state.attachment.name}"
         name: 'attachment.name'
         value: state.attachment.name
         'ev-input': tl.sendChange channels.change
@@ -25,27 +26,35 @@ module.exports = (state, channels) ->
     )
     (main {},
       (aside {},
-        (div {}, "you are logged as ", (h1 {}, state.user.username)) if state.user.id
+        (div {}, "you are connected as ", (h1 {}, state.user.username)) if state.user.id
         (div {},
           (h1 {}, 'Attachments ')
           (small {}, 'choose an attachment') if not state.attachment.id and state.card.attachments.length
           (button
-            'ev-click': tl.sendClick channels.newAttachment, 'custom.js',
-                        {preventDefault: true}
+            'ev-click': tl.sendClick channels.newAttachment, {kind: 'js'}, {preventDefault: true}
           , 'new javascript')
           (button
-            'ev-click': tl.sendClick channels.newAttachment, 'custom.css',
-                        {preventDefault: true}
+            'ev-click': tl.sendClick channels.newAttachment, {kind: 'css'}, {preventDefault: true}
           , 'new CSS')
           (button
-            'ev-click': tl.sendClick channels.newAttachment, 'custom.txt',
-                        {preventDefault: true}
+            'ev-click': tl.sendClick channels.newAttachment, {kind: 'txt'}, {preventDefault: true}
           , 'new text')
           (ul {}, state.card.attachments.map (att) ->
-            (li {}, (a
-              href: "#/b/#{state.board.id}/c/#{state.card.id}/a/#{att.name}"
-              className: if att.id == state.attachment.id then 'selected' else ''
-            , att.name))
+            (li {},
+              (a
+                title: "edit or rename #{att.name}"
+                href: "#/b/#{state.board.id}/c/#{state.card.id}/a/#{att.name}"
+                className: if att.id == state.attachment.id then 'selected' else ''
+              ,
+                att.name
+                (button
+                  title: "delete #{att.name}"
+                  'ev-click': tl.sendClick channels.deleteAttachment,
+                              {card: state.card.id, attachment: att.id},
+                              {preventDefault: true}
+                , '×')
+              )
+            )
           ) if state.card.attachments.length
         ) if state.card.id
         (div {},
@@ -70,6 +79,7 @@ module.exports = (state, channels) ->
         ) if state.user.boards.length
       )
       (textarea
+        title: "edit #{state.attachment.name}"
         name: 'attachment.content'
         value: state.attachment.content or Lockr.get "text:#{state.card.id}/#{state.attachment.name}"
         'ev-input': tl.sendChange channels.change
