@@ -2133,7 +2133,7 @@ handlers = {
             read: true,
             write: true
           },
-          expiration: '1hour'
+          expiration: '1day'
         });
       }
     }).then((function(_this) {
@@ -2141,7 +2141,7 @@ handlers = {
         var now;
         now = new Date;
         Lockr.set('token', trello.token);
-        Lockr.set('token-expires', now.setMinutes(now.getMinutes() + 59));
+        Lockr.set('token-expires', now.setMinutes(now.getMinutes() + 60 * 15));
         return _this.onLogged(State);
       };
     })(this))["catch"](console.log.bind(console));

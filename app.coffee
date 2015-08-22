@@ -65,11 +65,11 @@ handlers =
           scope:
             read: true
             write: true
-          expiration: '1hour'
+          expiration: '1day'
     ).then(=>
       now = new Date
       Lockr.set 'token', trello.token
-      Lockr.set 'token-expires', now.setMinutes now.getMinutes() + 59
+      Lockr.set 'token-expires', now.setMinutes now.getMinutes() + 60*15
 
       @onLogged State
     ).catch(console.log.bind console)
