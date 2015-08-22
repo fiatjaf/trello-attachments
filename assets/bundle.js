@@ -2190,6 +2190,7 @@ handlers = {
         fields: 'id,name,url,mimeType'
       });
     }).then(function(attachments) {
+      State.silentlyUpdate('attachment.new', false);
       return State.change('card.attachments', attachments);
     })["catch"](console.log.bind(console));
   },
