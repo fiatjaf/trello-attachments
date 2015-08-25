@@ -106,7 +106,8 @@ handlers =
         fields: 'id,name,url,mimeType'
       }
     ).then((attachments) ->
-      State.silentlyUpdate 'attachment.new', false
+      if attachments.length > 0
+        State.silentlyUpdate 'attachment.new', false
       State.change 'card.attachments', attachments
     ).catch(console.log.bind console)
   fetchAttachment: (State) ->

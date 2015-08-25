@@ -77,9 +77,15 @@ Trello = (function() {
       } else if (data.file && -1 !== path.indexOf('attachments')) {
         req = req.field('name', data.name).field('mimeType', data.mimeType).field('key', self.key).field('token', self.token);
         if (typeof data.file === 'string') {
-          req = req.attach('file', new File([data.file], data.name, {
-            type: data.mimeType
-          }), data.name);
+          if (window.Blob) {
+            req = req.attach('file', new File([data.file], data.name, {
+              type: data.mimeType
+            }), data.name);
+          } else {
+            req = req.set({
+              'Content-Type': 'boundary=----WebKitFormBoundarygZLBN6gxSW5OC5W1'
+            }).send("------WebKitFormBoundarygZLBN6gxSW5OC5W1\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\n" + data.name + "\r\n------WebKitFormBoundarygZLBN6gxSW5OC5W1\r\nContent-Disposition: form-data; name=\"mimeType\"\r\n\r\n" + data.mimeType + "\r\n------WebKitFormBoundarygZLBN6gxSW5OC5W1\r\nContent-Disposition: form-data; name=\"key\"\r\n\r\n" + self.key + "\r\n------WebKitFormBoundarygZLBN6gxSW5OC5W1\r\nContent-Disposition: form-data; name=\"token\"\r\n\r\n" + self.token + "\r\n------WebKitFormBoundarygZLBN6gxSW5OC5W1\r\nContent-Disposition: form-data; name=\"file\"; filename=\"" + data.name + "\"\r\nContent-Type: application/octet-stream\r\n\r\n" + data.file + "\r\n------WebKitFormBoundarygZLBN6gxSW5OC5W1--\r\n");
+          }
         } else if (typeof data.file === 'object' && data.size) {
           req = req.attach('file', data.file, data.name);
         }
@@ -2190,7 +2196,9 @@ handlers = {
         fields: 'id,name,url,mimeType'
       });
     }).then(function(attachments) {
-      State.silentlyUpdate('attachment.new', false);
+      if (attachments.length > 0) {
+        State.silentlyUpdate('attachment.new', false);
+      }
       return State.change('card.attachments', attachments);
     })["catch"](console.log.bind(console));
   },
@@ -7055,11 +7063,11 @@ arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_mo
 },{"./virtual-hyperscript/index.js":"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/virtual-hyperscript/index.js"}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/browser-split/index.js":[function(require,module,exports){
 arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/virtual-dom/node_modules/browser-split/index.js"][0].apply(exports,arguments)
 },{}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/ev-store/index.js":[function(require,module,exports){
-arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/virtual-dom/node_modules/ev-store/index.js"][0].apply(exports,arguments)
+arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/dom-delegator/node_modules/ev-store/index.js"][0].apply(exports,arguments)
 },{"individual/one-version":"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/one-version.js"}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/index.js":[function(require,module,exports){
-arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/index.js"][0].apply(exports,arguments)
+arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/dom-delegator/node_modules/ev-store/node_modules/individual/index.js"][0].apply(exports,arguments)
 },{}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/one-version.js":[function(require,module,exports){
-arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/one-version.js"][0].apply(exports,arguments)
+arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/dom-delegator/node_modules/ev-store/node_modules/individual/one-version.js"][0].apply(exports,arguments)
 },{"./index.js":"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/ev-store/node_modules/individual/index.js"}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/node_modules/x-is-array/index.js":[function(require,module,exports){
 arguments[4]["/home/fiatjaf/comp/wft/attachments-edit/node_modules/talio/node_modules/virtual-dom/node_modules/x-is-array/index.js"][0].apply(exports,arguments)
 },{}],"/home/fiatjaf/comp/wft/attachments-edit/node_modules/virtual-dom/virtual-hyperscript/hooks/ev-hook.js":[function(require,module,exports){
