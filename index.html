@@ -7,12 +7,18 @@
   <link rel="stylesheet" href="assets/bundle.css">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/humane-js/3.2.2/themes/flatty.min.css">
   <script>
-  (function(t,r,a,c,k){k=r.createElement('script');k.type='text/javascript';
-  k.async=true;k.src=a;k.id='ma';r.getElementsByTagName('head')[0].appendChild(k);
-  t.maq=[];t.mai=c;t.ma=function(){t.maq.push(arguments)};
-  })(window,document,'https://spooner.alhur.es:6984/microanalytics/_design/microanalytics/_rewrite/tracker.js','789w3dak');
-  
-  ma('pageView');
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '5828923a4b2ffa0dc0004f1a');
+    t.setAttribute('data-track-path', 'https://track.gaug.es/track.gif');
+    t.src = 'https://d36ee2fcip1434.cloudfront.net/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
   </script>
   <meta name="viewport" content="initial-scale=1">
 
